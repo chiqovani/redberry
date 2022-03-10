@@ -43,7 +43,7 @@ class CandidateController extends Controller
      */
     public function show(Candidates $candidate)
     {
-       return $candidate;
+       return $candidate->load('statusChangeTimeline');
     }
 
     /**
