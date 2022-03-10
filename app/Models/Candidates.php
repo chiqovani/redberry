@@ -14,4 +14,5 @@ class Candidates extends Model
     public function getCandidatesByStatusId(int $statusId) {
         return $this->where('status_id', $statusId)->get();
     }
+
 }

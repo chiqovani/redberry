@@ -30,6 +30,17 @@ class CandidateUpdateRequest extends FormRequest
             'min_salary'=> 'sometimes|integer',
             'max_salary'=> 'sometimes|integer',
             'linkedin'=> 'sometimes|string',
+            'status_id'=> 'sometimes|integer',
+            'status_comment' => 'sometimes|string'
         ];
+    }
+
+    public function validated()
+    {
+        $params =  parent::validated();
+        if(!isset($params['status_id'])) {
+            unset($params['status_comment']);
+        }
+        return $params;
     }
 }

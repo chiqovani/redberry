@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CandidateRequest;
 use App\Http\Requests\CandidateUpdateRequest;
 use App\Models\Candidates;
+use App\Models\StatusChange;
 use Illuminate\Http\Request;
 
 class CandidateController extends Controller
@@ -54,7 +55,13 @@ class CandidateController extends Controller
      */
     public function update(CandidateUpdateRequest $request, Candidates $candidate)
     {
-        $candidate->update($request->validated());
+        $params = $request->validated();
+        if(isset($params['status_id'])) {
+            $data = ['status_id' => $params['status_id'], 'comment' => $params['status_comment'] ,'candidate_id' => $candidate->id];
+            StatusChange::create($data);
+            unset($params['status_comment']);
+        }
+        $candidate->update($params);
         return $candidate;
     }
 
