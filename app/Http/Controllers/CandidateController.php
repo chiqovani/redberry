@@ -14,9 +14,12 @@ class CandidateController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, Candidates $candidate)
     {
-        return Candidates::all();
+        if($request->has('status')) {
+            return $candidate->getCandidatesByStatusId(intval($request->get('status')));
+        }
+        return $candidate->all();
     }
 
     /**

@@ -10,4 +10,8 @@ class Candidates extends Model
     use HasFactory;
     protected $guarded = [];
     protected $table = 'candidate';
+
+    public function getCandidatesByStatusId(int $statusId) {
+        return $this->where('status_id', $statusId)->get();
+    }
 }
