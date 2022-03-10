@@ -13,7 +13,7 @@ class StatusSeeder extends Seeder
      * @return void
      */
     protected $model = Status::class;
-    protected $statuses = ['First Contact', 'Interview', 'Tech Assignment', 'Rejected', 'Hired'];
+    protected $statuses = ['Initial','First Contact', 'Interview', 'Tech Assignment', 'Rejected', 'Hired'];
 
     public function run()
     {

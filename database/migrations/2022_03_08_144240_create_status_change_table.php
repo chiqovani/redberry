@@ -17,7 +17,7 @@ class CreateStatusChangeTable extends Migration
             $table->id();
             $table->integer('candidate_id');
             $table->integer('status_id');
-            $table->longText('comment');
+            $table->longText('comment')->nullable();
             $table->timestamps();
         });
     }

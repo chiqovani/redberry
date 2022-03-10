@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CandidateRequest;
 use App\Http\Requests\CandidateUpdateRequest;
 use App\Models\Candidates;
+use App\Models\Status;
 use App\Models\StatusChange;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -29,12 +29,13 @@ class CandidateController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param Candidates $candidate
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     public function store(Request $request, Candidates $candidate)
     {
-        $path = storage_path('public/');
+        $path = storage_path('app/public/');
         try {
             $validator = Validator::make($request->all(), $this->getRules());
             $params = $validator->validated();
@@ -44,6 +45,7 @@ class CandidateController extends Controller
                 $file->move($path, $fileName);
                 $params['cv'] = $fileName;
             }
+            $params['status_id'] = Status::where('name', 'Initial')->first()->id;
             return $candidate->create($params);
         }
         catch(ValidationException $exception) {
@@ -51,7 +53,6 @@ class CandidateController extends Controller
         }
         catch(\Throwable $exception) {
             return response(['status' => 'error', 'message' => 'internal server error', 'data' => $exception->getMessage()], 500);
-
         }
     }
 
@@ -69,20 +70,31 @@ class CandidateController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param CandidateUpdateRequest $request
+     * @param Request $request
      * @param Candidates $candidate
      * @return Candidates
      */
-    public function update(CandidateUpdateRequest $request, Candidates $candidate)
+    public function update(Request $request, Candidates $candidate)
     {
-        $params = $request->validated();
-        if(isset($params['status_id'])) {
-            $data = ['status_id' => $params['status_id'], 'comment' => $params['status_comment'] ,'candidate_id' => $candidate->id];
+        try {
+            $validator = Validator::make($request->all(), $this->getUpdateRules());
+            $params = $validator->validated();
+            $comment = null;
+            if(isset($params['status_comment'])) {
+                $comment = $params['status_comment'];
+                unset($params['status_comment']);
+            }
+            $data = ['status_id' => $params['status_id'], 'comment' => $comment,'candidate_id' => $candidate->id];
             StatusChange::create($data);
-            unset($params['status_comment']);
+            $candidate->update($params);
+            return $candidate;
         }
-        $candidate->update($params);
-        return $candidate;
+        catch(ValidationException $exception) {
+            return response(['status' => 'error', 'message' => 'validation failed', 'data' => $exception->errors()], 400);
+        }
+        catch(\Throwable $exception) {
+            return response(['status' => 'error', 'message' => 'internal server error', 'data' => $exception->getMessage()], 500);
+        }
     }
 
     /**
@@ -97,11 +109,8 @@ class CandidateController extends Controller
         return [];
     }
 
-    public function uploadCV(Request $request) {
-        dd('uploading cv');
-    }
-
-    protected function getRules() {
+    protected function getRules()
+    {
         return  [
             'first_name'=>'required|string',
             'last_name'=>'required|string',
@@ -110,6 +119,14 @@ class CandidateController extends Controller
             'max_salary'=> 'sometimes|integer',
             'linkedin_url'=> 'sometimes|string',
             'cv' => 'sometimes|mimes:jpeg,png,doc,docs,pdf'
+        ];
+    }
+
+    protected function getUpdateRules()
+    {
+        return [
+            'status_id'=> 'required|integer|exists:statuses,id',
+            'status_comment' => 'exclude_without:status_id|string'
         ];
     }
 }
