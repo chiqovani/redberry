@@ -22,6 +22,7 @@ class CreateCandidateTable extends Migration
             $table->float('max_salary')->nullable();
             $table->string('linkedin_url')->nullable();
             $table->string('status_id')->nullable();
+            $table->string('cv')->nullable();
             $table->timestamps();
         });
     }

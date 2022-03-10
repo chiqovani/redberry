@@ -29,7 +29,7 @@ class CandidateRequest extends FormRequest
             'position'=>'required|string',
             'min_salary'=> 'sometimes|integer',
             'max_salary'=> 'sometimes|integer',
-            'linkedin'=> 'sometimes|string',
+            'linkedin_url'=> 'sometimes|string',
         ];
     }
 }

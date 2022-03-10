@@ -7,6 +7,9 @@ use App\Http\Requests\CandidateUpdateRequest;
 use App\Models\Candidates;
 use App\Models\StatusChange;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class CandidateController extends Controller
 {
@@ -29,10 +32,27 @@ class CandidateController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CandidateRequest $request, Candidates $candidate)
+    public function store(Request $request, Candidates $candidate)
     {
-        $params = $request->validated();
-        return $candidate->create($params);
+        $path = storage_path('public/');
+        try {
+            $validator = Validator::make($request->all(), $this->getRules());
+            $params = $validator->validated();
+            if($request->has('cv')) {
+                $file = $params['cv'];
+                $fileName = md5(Str::random()) . '.' .$file->getClientOriginalExtension();
+                $file->move($path, $fileName);
+                $params['cv'] = $fileName;
+            }
+            return $candidate->create($params);
+        }
+        catch(ValidationException $exception) {
+            return response(['status' => 'error', 'message' => 'validation failed', 'data' => $exception->errors()], 400);
+        }
+        catch(\Throwable $exception) {
+            return response(['status' => 'error', 'message' => 'internal server error', 'data' => $exception->getMessage()], 500);
+
+        }
     }
 
     /**
@@ -79,5 +99,17 @@ class CandidateController extends Controller
 
     public function uploadCV(Request $request) {
         dd('uploading cv');
+    }
+
+    protected function getRules() {
+        return  [
+            'first_name'=>'required|string',
+            'last_name'=>'required|string',
+            'position'=>'required|string',
+            'min_salary'=> 'sometimes|integer',
+            'max_salary'=> 'sometimes|integer',
+            'linkedin_url'=> 'sometimes|string',
+            'cv' => 'sometimes|mimes:jpeg,png,doc,docs,pdf'
+        ];
     }
 }
