@@ -49,15 +49,10 @@
             <div class="modal-content applicant-modal">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLongTitle">Applicant Information</h5>
-                    <div id="statuses" class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                            Change Status
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                            <li><a class="dropdown-item"><span class="badge bg-primary">Initial</span></a></li>
-                            <li><a class="dropdown-item"><span class="badge bg-secondary">First Contract</span></a></li>
-                            <li><a class="dropdown-item"><span class="badge bg-success">Hired</span></a></li>
-                        </ul>
+                    <div class="form-group">
+                        <label for="exampleFormControlSelect1">Select Candidate Status</label>
+                        <select class="form-control" id="statuses">
+                        </select>
                     </div>
                 </div>
                 <div class="d-flex">
@@ -121,10 +116,10 @@
                                                 </p>
                                             </div>
                                         </li>
-                                        <div class="input-group">
-                                            <textarea class="form-control" aria-label="With textarea"></textarea>
+                                        <div  class="input-group">
+                                            <textarea id="comment" class="form-control" aria-label="With textarea"></textarea>
                                         </div>
-                                        <button type="button" class="btn btn-danger mt-2 float-end">Comment</button>
+                                        <button id="submit_comment" type="button"  class="btn btn-danger mt-2 float-end">Comment</button>
                                     </ul>
                                 </div>
                             </div>

@@ -7,6 +7,7 @@ use App\Models\Candidates;
 use App\Models\Status;
 use App\Models\StatusChange;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -80,13 +81,16 @@ class CandidateController extends Controller
             $validator = Validator::make($request->all(), $this->getUpdateRules());
             $params = $validator->validated();
             $comment = null;
-            if(isset($params['status_comment'])) {
+            if(isset($params['status_comment']) || empty($params['status_comment'])) {
                 $comment = $params['status_comment'];
                 unset($params['status_comment']);
             }
             $data = ['status_id' => $params['status_id'], 'comment' => $comment,'candidate_id' => $candidate->id];
-            StatusChange::create($data);
-            $candidate->update($params);
+            DB::transaction(function () use ($data,$params,$candidate) { // Start the transaction
+                StatusChange::create($data);
+                $candidate->update($params);
+                $candidate->refresh();
+            });
             return $candidate;
         }
         catch(ValidationException $exception) {
@@ -126,7 +130,7 @@ class CandidateController extends Controller
     {
         return [
             'status_id'=> 'required|integer|exists:statuses,id',
-            'status_comment' => 'exclude_without:status_id|string'
+            'status_comment' => 'exclude_without:status_id'
         ];
     }
 }

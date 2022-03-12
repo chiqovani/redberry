@@ -1,4 +1,5 @@
-const statuses = null;
+var statuses = [];
+var selectedCandidate = [];
 $(document).ready(function () {
     $('input, select').on('change', function(event) {
         var $element = $(event.target),
@@ -18,6 +19,15 @@ $(document).ready(function () {
         var target = $(this).data('target');
         $("#" + target).focus();
     })
+
+    $("#submit_comment").click(function () {
+        updateStatus()
+    })
+
+    $('#statuses').on('change',function () {
+        $("#comment").focus();
+    })
+
     getStatuses()
     loadViewData()
 });
@@ -42,13 +52,37 @@ function loadViewData() {
     });
 }
 
+function updateStatus() {
+    let selected_status = $("#statuses option:selected").val()
+    if(selectedCandidate.status_id != selected_status) {
+        $.ajax({
+            type: "PUT",
+            url: url + 'api/candidates/' + selectedCandidate.id,
+            data: {
+                status_id : selected_status,
+                status_comment : $('#comment').val(),
+            },
+            success: function (data) {
+                console.log('status updated', data)
+            }
+        })
+    }
+}
+
 function getCandidateInfo(id) {
-    self = this
     $.ajax({
         type: "GET",
         url: url + 'api/candidates/' + id,
         success: function (candidate) {
-            console.log(self.statuses)
+            selectedCandidate = candidate;
+            $('#statuses').html("")
+            statuses.forEach(function (status) {
+                if(status.id == candidate.status_id) {
+                    $('#statuses').append('<option selected value="'+ status.id +'">'+ status.name +'</option>')
+                }else{
+                    $('#statuses').append('<option  value="'+ status.id +'">'+ status.name +'</option>')
+                }
+            })
             $('#linkedin').val(candidate.linkedin_url)
             $('#min_salary').val(candidate.min_salary)
             $('#max_salary').val(candidate.max_salary)
@@ -59,12 +93,11 @@ function getCandidateInfo(id) {
 }
 
 function getStatuses() {
-    self = this
     $.ajax({
         type: "GET",
         url: url + 'statuses/',
-        success: function (statuses) {
-           self.statuses = statuses;
+        success: function (data) {
+           statuses = data;
         }
     })
 }
