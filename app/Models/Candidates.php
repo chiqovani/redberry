@@ -10,7 +10,7 @@ class Candidates extends Model
     use HasFactory;
     protected $guarded = [];
     protected $table = 'candidate';
-
+    protected $with = ['status'];
     public function getCandidatesByStatusId(int $statusId)
     {
         return $this->where('status_id', $statusId)->get();
@@ -19,5 +19,10 @@ class Candidates extends Model
     public function statusChangeTimeline()
     {
         return $this->hasMany(StatusChange::class, 'candidate_id', 'id');
+    }
+
+    public function status()
+    {
+        return $this->hasOne(Status::class, 'id', 'status_id');
     }
 }
