@@ -21,7 +21,7 @@ class CandidateController extends Controller
      */
     public function index(Request $request, Candidates $candidate)
     {
-        if($request->has('status')) {
+        if($request->has('status') && $request->get('status') != null) {
             return $candidate->getCandidatesByStatusId(intval($request->get('status')));
         }
         return $candidate->all();

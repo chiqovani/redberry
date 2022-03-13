@@ -28,7 +28,7 @@ $(document).ready(function () {
         $("#comment").focus();
     })
 
-    $('body').on('focusout','.userinfo',function(e) {
+    $('body').on('focusout','.userinfo',function() {
         updateUserInfo($(this).prop('id'), $(this).val())
     })
 
@@ -45,29 +45,35 @@ $(document).ready(function () {
         updateUserInfo('remove_tag', event.item);
     });
 
+    $('.remove_candidate').on('click', function(event) {
+        removeCandidate();
+    });
+
     getStatuses()
     loadViewData()
 });
 
-function loadViewData() {
+function loadViewData(status_id = null) {
     $.ajax({
         type: "GET",
         url: url + 'api/candidates',
+        data: {'status' : status_id},
         success: function (data) {
             $('#candidates').html('')
-            $('#status_filter').html('')
+            $('#filter').html('')
             var filters = [ 'Initial',
                 'First Contact',
                 'Interview',
                 'Tech Assignment',
                 'Rejected',
                 'Hired']
-            // statuses.forEach(function (status, inxdex){
-            //     var div =   '<div className="col-2">' +
-            //                     '<button type="button" value="' +  status.id + '" className="btn btn-light">' +  filters[inxdex]+ '<span class="badge rounded-pill bg-info text-dark"></span></button>'
-            //                 '</div>'
-            //     $('#status_filter').append(div)
-            // })
+
+            statuses.forEach(function (status, inxdex){
+                var div =   '<div class="col-2">' +
+                                '<button type="button" class="status_filter btn btn-light"  onClick="loadViewData('+status.id +')"  value="' +  status.id + '">' +  filters[inxdex]+ '<span class="badge rounded-pill bg-info text-dark">0</span>' + '</button>'
+                            '</div>'
+                $('#filter').append(div)
+            })
             data.forEach(function (candidate) {
                 var tr = '<tr>' +
                             '<td class="pointer" onClick="getCandidateInfo('+candidate.id +')" >'+candidate.first_name +'  '+candidate.last_name +'</td>' +
@@ -97,6 +103,17 @@ function updateStatus() {
         })
     }
 }
+
+function removeCandidate(){
+    $.ajax({
+        type: "DELETE",
+        url: url + 'api/candidates/' + selectedCandidate.id,
+        success: function (data) {
+            $("#candidateModal").modal('hide');
+        }
+    })
+}
+
 
 function getCandidateInfo(id) {
     $.ajax({
@@ -135,7 +152,6 @@ function getCandidateInfo(id) {
             var tags = []
             $('#tags').tagsinput('refresh');
             candidate.tags.forEach(function (tag,index) {
-                // tags.push({ id: index, itemValue: tag.name.en })
                 $('#tags').tagsinput('add', tag.name.en, 'prefill');
             })
             $('#candidate_name').text(candidate.first_name + ' ' + candidate.last_name)

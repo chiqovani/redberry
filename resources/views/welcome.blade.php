@@ -19,9 +19,6 @@
 <div class="container table-responsive py-5">
     <div class="row">
         <div id="filter" class="row">
-            <div class="col-2">
-                <button type="button" class="btn btn-light"> Hired <span class="badge rounded-pill bg-info text-dark">2</span></button>
-            </div>
         </div>
     </div>
     <table class="table table-bordered table-hover">
@@ -42,6 +39,14 @@
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content applicant-modal">
                 <div class="modal-header">
+                    <div class="row">
+                        <div class="col-7">
+                            <h5 class="modal-title" id="candidate_name"></h5>
+                        </div>
+                        <div class="col-3">
+                            <button type="button" class="remove_candidate btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
                     <h5 class="modal-title" id="candidate_name"></h5>
                     <div class="form-group">
                         <label for="exampleFormControlSelect1">Select Candidate Status</label>
