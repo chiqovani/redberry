@@ -18,8 +18,12 @@
 <body>
 <div class="container table-responsive py-5">
     <div class="row">
-        <div id="filter" class="row">
-        </div>
+            <div class="btn-group mr-2" id="filter" role="group" aria-label="First group">
+                <button type="button" class="btn btn-secondary ml-2">1</button>
+                <button type="button" class="btn btn-secondary mb-2">2</button>
+                <button type="button" class="btn btn-secondary mb-2">3</button>
+                <button type="button" class="btn btn-secondary mb-2">4</button>
+            </div>
     </div>
     <table class="table table-bordered table-hover">
         <thead class="thead-dark">

@@ -14,7 +14,7 @@ use App\Http\Controllers\StatusController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('candidate');
 });
 
 Route::get('/statuses', [StatusController::class, 'getStatuses']);

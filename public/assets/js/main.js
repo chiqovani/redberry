@@ -61,18 +61,15 @@ function loadViewData(status_id = null) {
         success: function (data) {
             $('#candidates').html('')
             $('#filter').html('')
-            var filters = [ 'Initial',
-                'First Contact',
-                'Interview',
-                'Tech Assignment',
-                'Rejected',
-                'Hired']
+            var filters = [ 'Initial', 'First Contact', 'Interview', 'Tech Assignment', 'Rejected', 'Hired']
 
+            var button_all = '<button type="button" onClick="loadViewData(null)" class="btn btn-light mb-2">All</button>'
+            $('#filter').append(button_all)
             statuses.forEach(function (status, inxdex){
-                var div =   '<div class="col-2">' +
-                                '<button type="button" class="status_filter btn btn-light"  onClick="loadViewData('+status.id +')"  value="' +  status.id + '">' +  filters[inxdex]+ '<span class="badge rounded-pill bg-info text-dark">0</span>' + '</button>'
-                            '</div>'
-                $('#filter').append(div)
+                var button =
+                                '<button type="button" class="btn btn-light mb-2"  onClick="loadViewData('+status.id +')"  value="' +  status.id + '">' +  filters[inxdex]+ '<span class="badge rounded-pill bg-info text-dark">0</span>' + '</button>'
+
+                $('#filter').append(button)
             })
             data.forEach(function (candidate) {
                 var tr = '<tr>' +
@@ -99,6 +96,7 @@ function updateStatus() {
                 status_comment : $('#comment').val(),
             },
             success: function (data) {
+                $("#candidateModal").modal('hide');
             }
         })
     }
