@@ -563,9 +563,15 @@ div.timeline .column_center .timeline_element:after, div.timeline .column_center
 }
 
 .timeline-xs {
+
     margin: 0;
     padding: 0;
     list-style: none
+}
+
+.time {
+    max-height: 300px;
+    overflow: auto;
 }
 
 .timeline-xs .timeline-item {

@@ -18,16 +18,10 @@
 <body>
 <div class="container table-responsive py-5">
     <div class="row">
-        <div class="row col-8">
-            <div class="input-group mb-5">
-                <input id="search-input" type="search" class="form-control" placeholder="Search anything...">
+        <div id="filter" class="row">
+            <div class="col-2">
+                <button type="button" class="btn btn-light"> Hired <span class="badge rounded-pill bg-info text-dark">2</span></button>
             </div>
-
-        </div>
-        <div class="row col-4">
-            <span>
-
-            </span>
         </div>
     </div>
     <table class="table table-bordered table-hover">
@@ -48,7 +42,7 @@
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content applicant-modal">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Applicant Information</h5>
+                    <h5 class="modal-title" id="candidate_name"></h5>
                     <div class="form-group">
                         <label for="exampleFormControlSelect1">Select Candidate Status</label>
                         <select class="form-control" id="statuses">
@@ -60,75 +54,45 @@
                         <div class="d-flex bd-highlight">
                             <div class="p-2 flex-fill bd-highlight">
                                 <p class="text-muted">Position</p>
-                                <input id="position" class="border-0" value="Developer"/>
+                                <input id="position" class="userinfo border-0" value="Developer"/>
                                 <i href="#" data-target="position" class="edit pointer fas fa-pencil text-danger"></i>
                             </div>
                             <div class="p-2 flex-fill bd-highlight">
                                 <p class="text-muted">Linkedin Url</p>
-                                <input id="linkedin" class="border-0" value="https://www.linkedin.com"/>
-                                <i href="#" data-target="linkedin" class="edit pointer fas fa-pencil text-danger"></i>
+                                <input id="linkedin_url" class="userinfo border-0" value="https://www.linkedin.com"/>
+                                <i href="#" data-target="linkedin_url" class="edit pointer fas fa-pencil text-danger"></i>
                             </div>
                         </div>
                         <div class="d-flex bd-highlight w-50">
                             <div class="p-2 flex-fill bd-highlight w-50">
                                 <p class="text-muted">Salary Range</p>
-                                <input id="min_salary" class="border-0 w-25" value=""/>
-                                <input id="max_salary" class="border-0 w-25" value=""/>
+                                <input id="min_salary" class="userinfo border-0 w-25" value=""/>
+                                <input id="max_salary" class="userinfo border-0 w-25" value=""/>
                                 <i href="#" data-target="min_salary" class="edit pointer fas fa-pencil text-danger"></i>
                             </div>
                         </div>
                         <div class="d-flex bd-highlight">
                             <div class="p-2 flex-fill bd-highlight">
                                 <p class="text-muted">Skillset</p>
-                                <input  class="w-100" value="PHP, JAVA, JS" data-role="tagsinput"/>
+                                <input  id="tags" class="w-100" value="" data-role="tagsinput" multiple/>
                             </div>
                         </div>
                     </div>
                     <div class="col-4">
-                        <div class="d-flex bd-highlight">
+                        <div class=" bd-highlight">
                             <div class="panel panel-white no-radius">
                                 <div class="panel-body">
-                                    <ul class="timeline-xs margin-top-20 margin-bottom-20">
-                                        <li class="timeline-item success list-group-item-warning">
-                                            <div class="margin-left-15">
-                                                <div class="text-muted text-small">
-                                                    2 minutes ago
-                                                </div>
-                                                <p>
-                                                    <a class="text-info" href="">
-                                                        Steven
-                                                    </a>
-                                                    has completed his account.
-                                                </p>
-                                            </div>
-                                        </li>
-                                        <li class="timeline-item info">
-                                            <div class="margin-left-15">
-                                                <div class="text-muted text-small">
-                                                    Thu, 12 Jun
-                                                </div>
-                                                <p>
-                                                    Contacted
-                                                    <a class="text-info" href="">
-                                                        Microsoft
-                                                    </a>
-                                                    for license upgrades.
-                                                </p>
-                                            </div>
-                                        </li>
-                                        <div  class="input-group">
-                                            <textarea id="comment" class="form-control" aria-label="With textarea"></textarea>
-                                        </div>
-                                        <button id="submit_comment" type="button"  class="btn btn-danger mt-2 float-end">Comment</button>
+                                    <ul id="status_change_timeline" class="time timeline-xs margin-top-20 margin-bottom-20">
+
                                     </ul>
+                                    <div  class="input-group">
+                                        <textarea id="comment" class="form-control" aria-label="With textarea"></textarea>
+                                    </div>
+                                    <button id="submit_comment" type="button"  class="btn btn-danger mt-2 float-end">Comment</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
                 </div>
             </div>
         </div>

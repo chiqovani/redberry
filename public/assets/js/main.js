@@ -28,6 +28,23 @@ $(document).ready(function () {
         $("#comment").focus();
     })
 
+    $('body').on('focusout','.userinfo',function(e) {
+        updateUserInfo($(this).prop('id'), $(this).val())
+    })
+
+    $('#candidateModal').on('hidden.bs.modal', function() {
+        loadViewData()
+    });
+
+    $('#tags').on('itemAdded', function(event) {
+        if(event.options != 'prefill') updateUserInfo('add_tag', event.item)
+    });
+
+    $('#tags').on('itemRemoved', function(event) {
+        console.log(event.item)
+        updateUserInfo('remove_tag', event.item);
+    });
+
     getStatuses()
     loadViewData()
 });
@@ -38,9 +55,22 @@ function loadViewData() {
         url: url + 'api/candidates',
         success: function (data) {
             $('#candidates').html('')
+            $('#status_filter').html('')
+            var filters = [ 'Initial',
+                'First Contact',
+                'Interview',
+                'Tech Assignment',
+                'Rejected',
+                'Hired']
+            // statuses.forEach(function (status, inxdex){
+            //     var div =   '<div className="col-2">' +
+            //                     '<button type="button" value="' +  status.id + '" className="btn btn-light">' +  filters[inxdex]+ '<span class="badge rounded-pill bg-info text-dark"></span></button>'
+            //                 '</div>'
+            //     $('#status_filter').append(div)
+            // })
             data.forEach(function (candidate) {
                 var tr = '<tr>' +
-                            '<td class="pointer" onClick="getCandidateInfo('+candidate.id +')" >'+candidate.first_name +'  '+candidate.first_name +'</td>' +
+                            '<td class="pointer" onClick="getCandidateInfo('+candidate.id +')" >'+candidate.first_name +'  '+candidate.last_name +'</td>' +
                             '<td>'+candidate.position +'</td>' +
                             '<td>'+candidate.min_salary +' - '+candidate.max_salary +'</td>'+
                             '<td>' + 'PHP' + '</td>' +
@@ -63,7 +93,6 @@ function updateStatus() {
                 status_comment : $('#comment').val(),
             },
             success: function (data) {
-                console.log('status updated', data)
             }
         })
     }
@@ -83,6 +112,33 @@ function getCandidateInfo(id) {
                     $('#statuses').append('<option  value="'+ status.id +'">'+ status.name +'</option>')
                 }
             })
+            $('#status_change_timeline').html("")
+            var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            options.timeZone = 'UTC';
+            options.timeZoneName = 'short';
+            candidate.status_change_timeline.forEach(function (record) {
+                date = new Date(record.created_at).toLocaleDateString("en-US", options);
+                var li =  '<li class="timeline-item info">' +
+                            ' <div class="margin-left-15">' +
+                                '<div class="text-muted text-small">'
+                                 + date  +
+                                '</div>' +
+                                '<span class="badge bg-warning">' + record.status.name + '</span>' +
+                                '<p class="text-muted">'
+                                    + (record.comment ? record.comment :  '')  +
+                                '</p>' +
+                            '</div>' +
+                        '</li>'
+                $('#status_change_timeline').append(li)
+             })
+
+            var tags = []
+            $('#tags').tagsinput('refresh');
+            candidate.tags.forEach(function (tag,index) {
+                // tags.push({ id: index, itemValue: tag.name.en })
+                $('#tags').tagsinput('add', tag.name.en, 'prefill');
+            })
+            $('#candidate_name').text(candidate.first_name + ' ' + candidate.last_name)
             $('#linkedin').val(candidate.linkedin_url)
             $('#min_salary').val(candidate.min_salary)
             $('#max_salary').val(candidate.max_salary)
@@ -98,6 +154,20 @@ function getStatuses() {
         url: url + 'statuses/',
         success: function (data) {
            statuses = data;
+        }
+    })
+}
+
+function updateUserInfo(field, value) {
+    var data = []
+    data[field] = value
+    $.ajax({
+        type: "PUT",
+        dataType: "json",
+        contentType: "application/json",
+        url: url + 'api/candidates/' + selectedCandidate.id,
+        data: JSON.stringify(Object.assign({}, data)),
+        success: function (data) {
         }
     })
 }

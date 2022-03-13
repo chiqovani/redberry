@@ -65,7 +65,7 @@ class CandidateController extends Controller
      */
     public function show(Candidates $candidate)
     {
-       return $candidate->load('statusChangeTimeline');
+       return $candidate->load('statusChangeTimeline')->load('tags');;
     }
 
     /**
@@ -80,18 +80,29 @@ class CandidateController extends Controller
         try {
             $validator = Validator::make($request->all(), $this->getUpdateRules());
             $params = $validator->validated();
-            $comment = null;
-            if(isset($params['status_comment']) || empty($params['status_comment'])) {
-                $comment = $params['status_comment'];
-                unset($params['status_comment']);
-            }
-            $data = ['status_id' => $params['status_id'], 'comment' => $comment,'candidate_id' => $candidate->id];
-            DB::transaction(function () use ($data,$params,$candidate) { // Start the transaction
-                StatusChange::create($data);
+            DB::transaction(function () use ($params,$candidate) { // Start the transaction
+                $comment = null;
+                if(key_exists('add_tag',$params)) {
+                    $candidate->attachTags([$params['add_tag']]);
+                    unset($params['add_tag']);
+                }
+
+                if(key_exists('remove_tag',$params)) {
+                    $candidate->detachTags([$params['remove_tag']]);
+                    unset($params['remove_tag']);
+                }
+                if(key_exists('status_comment', $params)) {
+                    $comment = $params['status_comment'];
+                    unset($params['status_comment']);
+                }
+                if(isset($params['status_id'])) {
+                    $data = ['status_id' => $params['status_id'], 'comment' => $comment,'candidate_id' => $candidate->id];
+                    StatusChange::create($data);
+                }
                 $candidate->update($params);
                 $candidate->refresh();
             });
-            return $candidate;
+            return $candidate->load('tags');
         }
         catch(ValidationException $exception) {
             return response(['status' => 'error', 'message' => 'validation failed', 'data' => $exception->errors()], 400);
@@ -119,8 +130,8 @@ class CandidateController extends Controller
             'first_name'=>'required|string',
             'last_name'=>'required|string',
             'position'=>'required|string',
-            'min_salary'=> 'sometimes|integer',
-            'max_salary'=> 'sometimes|integer',
+            'min_salary'=> 'sometimes|numeric',
+            'max_salary'=> 'sometimes|numeric',
             'linkedin_url'=> 'sometimes|string',
             'cv' => 'sometimes|mimes:jpeg,png,doc,docs,pdf'
         ];
@@ -129,8 +140,16 @@ class CandidateController extends Controller
     protected function getUpdateRules()
     {
         return [
-            'status_id'=> 'required|integer|exists:statuses,id',
-            'status_comment' => 'exclude_without:status_id'
+            'first_name'=>'sometimes|string',
+            'last_name'=>'sometimes|string',
+            'position'=>'sometimes|string',
+            'min_salary'=> 'sometimes|numeric',
+            'max_salary'=> 'sometimes|numeric',
+            'linkedin'=> 'sometimes|string',
+            'status_id'=> 'sometimes|integer|exists:statuses,id',
+            'status_comment' => 'exclude_without:status_id',
+            'add_tag' => 'sometimes',
+            'remove_tag' => 'sometimes'
         ];
     }
 }
